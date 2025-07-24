@@ -1,0 +1,20 @@
+[project]
+name = "itf-py"
+version = "0.1.0"
+description = "Python library to parse and emit Apalache ITF traces"
+website = "https://github.com/konnov/itf-py"
+authors = [
+    {name = "Igor Konnov",email = "igor@konnov.phd"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "itf_py", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

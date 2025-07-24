@@ -1,5 +1,4 @@
 from types import SimpleNamespace
-from typing import NamedTuple
 
 from itf_py.itf import itf_of_value
 
@@ -23,33 +22,50 @@ class TestItfOfValue:
 
     def test_itf_of_value_very_big_bigint(self):
         """Test encoding very big bigint values"""
-        big_val = str(2 ** 256 - 1)
-        assert itf_of_value(2 ** 256 - 1) == {"#bigint": big_val}
+        big_val = str(2**256 - 1)
+        assert itf_of_value(2**256 - 1) == {"#bigint": big_val}
 
     def test_itf_of_value_list(self):
         """Test encoding list values"""
-        assert itf_of_value([1, 2, 3]) == [itf_of_value(1), itf_of_value(2), itf_of_value(3)]
+        assert itf_of_value([1, 2, 3]) == [
+            itf_of_value(1),
+            itf_of_value(2),
+            itf_of_value(3),
+        ]
         assert itf_of_value(["a", "b", "c"]) == ["a", "b", "c"]
         assert itf_of_value([]) == []
 
     def test_itf_of_value_tuple(self):
         """Test encoding tuple values"""
-        assert itf_of_value((1, "hello", True)) == {"#tup": [itf_of_value(1), "hello", True]}
+        assert itf_of_value((1, "hello", True)) == {
+            "#tup": [itf_of_value(1), "hello", True]
+        }
 
     def test_itf_of_value_set(self):
         """Test encoding set values"""
-        assert itf_of_value(frozenset([1, 2, 3])) == {"#set": [itf_of_value(1), itf_of_value(2), itf_of_value(3)]}
+        assert itf_of_value(frozenset([1, 2, 3])) == {
+            "#set": [itf_of_value(1), itf_of_value(2), itf_of_value(3)]
+        }
 
     def test_itf_of_value_map(self):
         """Test encoding map values"""
-        assert itf_of_value({"key1": "value1", "key2": 42}) == {"#map": [["key1", "value1"], ["key2", itf_of_value(42)]]}
+        assert itf_of_value({"key1": "value1", "key2": 42}) == {
+            "#map": [["key1", "value1"], ["key2", itf_of_value(42)]]
+        }
 
     def test_itf_of_value_nested_structures(self):
         """Test encoding nested data structures"""
         result = itf_of_value(frozenset([100, ("a", 200)]))
-        expected1 = {"#set": [{"#bigint": "100"}, {"#tup": ["a", {"#bigint": "200"}]}]}
-        expected2 = {"#set": [{"#bigint": "100"}, {"#tup": ["a", {"#bigint": "200"}]}]}
-        assert result == expected1 or result == expected2
+        # Since sets are unordered, we need to check the result more carefully
+        assert "#set" in result
+        result_set = result["#set"]
+        assert len(result_set) == 2
+
+        # Check that both expected elements are present
+        bigint_elem = {"#bigint": "100"}
+        tuple_elem = {"#tup": ["a", {"#bigint": "200"}]}
+        assert bigint_elem in result_set
+        assert tuple_elem in result_set
 
     def test_itf_of_named_value(self):
         """Test encoding a record"""

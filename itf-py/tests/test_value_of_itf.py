@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+
 from itf_py.itf import ITFUnserializable, value_of_itf
 
 
@@ -24,9 +25,9 @@ class TestValueOfItf:
 
     def test_value_of_itf_very_big_bigint(self):
         """Test decoding very big bigint values"""
-        big_val = str(2 ** 256 - 1)
+        big_val = str(2**256 - 1)
         bigint_val = {"#bigint": big_val}
-        assert value_of_itf(bigint_val) == 2 ** 256 - 1
+        assert value_of_itf(bigint_val) == 2**256 - 1
 
     def test_value_of_itf_list(self):
         """Test decoding list values"""
@@ -39,7 +40,7 @@ class TestValueOfItf:
         tup_val = {"#tup": [1, "hello", True]}
         result = value_of_itf(tup_val)
         assert isinstance(result, tuple)
-        assert result == (1, "hello", True) 
+        assert result == (1, "hello", True)
 
     def test_value_of_itf_set(self):
         """Test decoding set values"""

@@ -1,12 +1,13 @@
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 from types import SimpleNamespace
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class ITFState:
     """A single state in an ITF trace as a Python object."""
+
     meta: Dict[str, Any]
     values: Dict[str, Any]
 
@@ -14,15 +15,18 @@ class ITFState:
 @dataclass
 class ITFTrace:
     """An ITF trace as a Python object."""
+
     meta: Dict[str, Any]
     params: List[str]
     vars: List[str]
     states: List[ITFState]
     loop: Optional[int]
 
+
 @dataclass
 class ITFUnserializable:
     """A placeholder for unserializable values."""
+
     value: str
 
 
@@ -46,6 +50,7 @@ def value_of_itf(val: Any) -> Any:
     else:
         return val  # int, str, bool, or unserializable
 
+
 def itf_of_value(val: Any) -> Any:
     """Encode a Python value to its ITF JSON representation"""
     if isinstance(val, bool):
@@ -60,7 +65,7 @@ def itf_of_value(val: Any) -> Any:
         return {"#map": [[itf_of_value(k), itf_of_value(v)] for k, v in val.items()]}
     elif isinstance(val, list):
         return [itf_of_value(v) for v in val]
-    elif hasattr(val, '__dict__'):
+    elif hasattr(val, "__dict__"):
         return {k: itf_of_value(v) for k, v in val.__dict__.items()}
     elif isinstance(val, str):
         return val

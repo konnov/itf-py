@@ -15,11 +15,11 @@ on:
           - pypi
 
 jobs:
-  publish:
+  pypi-publish:
     runs-on: ubuntu-latest
-    environment: 
-      name: ${{ github.event_name == 'release' && 'pypi' || github.event.inputs.environment }}
-      url: ${{ github.event_name == 'release' && 'https://pypi.org/p/itf-py' || 'https://test.pypi.org/p/itf-py' }}
+    environment:
+      name: pypi
+      url: https://pypi.org/p/itf-py
     
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing

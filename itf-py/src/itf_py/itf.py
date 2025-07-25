@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
@@ -106,9 +105,3 @@ def trace_to_json(trace: ITFTrace) -> Dict[str, Any]:
     result["loop"] = trace.loop
     result["states"] = [state_to_json(s) for s in trace.states]
     return result
-
-
-def load_itf(json_str: str) -> ITFTrace:
-    """Load an ITF trace from a JSON string"""
-    data = json.loads(json_str)
-    return trace_from_json(data)

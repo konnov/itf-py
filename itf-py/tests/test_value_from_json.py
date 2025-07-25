@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from itf_py.itf import ITFUnserializable, value_from_json
 
 
-class TestValueOfItf:
+class TestValueFromJson:
     """Test parsing ITF values from their JSON representation."""
 
     def test_value_from_json_primitives(self):

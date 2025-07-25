@@ -1,7 +1,7 @@
 from itf_py.itf import ITFState, state_to_json
 
 
-class TestItfOfState:
+class TestStateToJson:
     """Test encoding Python states to JSON."""
 
     def test_state_to_json(self):

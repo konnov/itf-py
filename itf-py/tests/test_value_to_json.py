@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from itf_py.itf import value_to_json
 
 
-class TestItfOfValue:
+class TestValueToJson:
     """Test encoding Python values to JSON."""
 
     def test_value_to_json_primitives(self):

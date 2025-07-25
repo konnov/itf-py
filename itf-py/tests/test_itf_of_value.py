@@ -1,61 +1,61 @@
 from types import SimpleNamespace
 
-from itf_py.itf import itf_of_value
+from itf_py.itf import value_to_json
 
 
 class TestItfOfValue:
     """Test encoding Python values to JSON."""
 
-    def test_itf_of_value_primitives(self):
+    def test_value_to_json_primitives(self):
         """Test encoding primitive values"""
-        assert itf_of_value(42) == {"#bigint": "42"}
-        assert itf_of_value("hello") == "hello"
-        assert itf_of_value(True) == True
+        assert value_to_json(42) == {"#bigint": "42"}
+        assert value_to_json("hello") == "hello"
+        assert value_to_json(True) == True
 
-    def test_itf_of_value_bigint(self):
+    def test_value_to_json_bigint(self):
         """Test encoding small positive bigint"""
-        assert itf_of_value(12345) == {"#bigint": "12345"}
+        assert value_to_json(12345) == {"#bigint": "12345"}
 
-    def test_itf_of_value_negative_bigint(self):
+    def test_value_to_json_negative_bigint(self):
         """Test encoding negative bigint values"""
-        assert itf_of_value(-98765) == {"#bigint": "-98765"}
+        assert value_to_json(-98765) == {"#bigint": "-98765"}
 
-    def test_itf_of_value_very_big_bigint(self):
+    def test_value_to_json_very_big_bigint(self):
         """Test encoding very big bigint values"""
         big_val = str(2**256 - 1)
-        assert itf_of_value(2**256 - 1) == {"#bigint": big_val}
+        assert value_to_json(2**256 - 1) == {"#bigint": big_val}
 
-    def test_itf_of_value_list(self):
+    def test_value_to_json_list(self):
         """Test encoding list values"""
-        assert itf_of_value([1, 2, 3]) == [
-            itf_of_value(1),
-            itf_of_value(2),
-            itf_of_value(3),
+        assert value_to_json([1, 2, 3]) == [
+            value_to_json(1),
+            value_to_json(2),
+            value_to_json(3),
         ]
-        assert itf_of_value(["a", "b", "c"]) == ["a", "b", "c"]
-        assert itf_of_value([]) == []
+        assert value_to_json(["a", "b", "c"]) == ["a", "b", "c"]
+        assert value_to_json([]) == []
 
-    def test_itf_of_value_tuple(self):
+    def test_value_to_json_tuple(self):
         """Test encoding tuple values"""
-        assert itf_of_value((1, "hello", True)) == {
-            "#tup": [itf_of_value(1), "hello", True]
+        assert value_to_json((1, "hello", True)) == {
+            "#tup": [value_to_json(1), "hello", True]
         }
 
-    def test_itf_of_value_set(self):
+    def test_value_to_json_set(self):
         """Test encoding set values"""
-        assert itf_of_value(frozenset([1, 2, 3])) == {
-            "#set": [itf_of_value(1), itf_of_value(2), itf_of_value(3)]
+        assert value_to_json(frozenset([1, 2, 3])) == {
+            "#set": [value_to_json(1), value_to_json(2), value_to_json(3)]
         }
 
-    def test_itf_of_value_map(self):
+    def test_value_to_json_map(self):
         """Test encoding map values"""
-        assert itf_of_value({"key1": "value1", "key2": 42}) == {
-            "#map": [["key1", "value1"], ["key2", itf_of_value(42)]]
+        assert value_to_json({"key1": "value1", "key2": 42}) == {
+            "#map": [["key1", "value1"], ["key2", value_to_json(42)]]
         }
 
-    def test_itf_of_value_nested_structures(self):
+    def test_value_to_json_nested_structures(self):
         """Test encoding nested data structures"""
-        result = itf_of_value(frozenset([100, ("a", 200)]))
+        result = value_to_json(frozenset([100, ("a", 200)]))
         # Since sets are unordered, we need to check the result more carefully
         assert "#set" in result
         result_set = result["#set"]
@@ -70,5 +70,5 @@ class TestItfOfValue:
     def test_itf_of_named_value(self):
         """Test encoding a record"""
         user = SimpleNamespace(name="Alice", age=30, active=True)
-        result = itf_of_value(user)
-        assert result == {"name": "Alice", "age": itf_of_value(30), "active": True}
+        result = value_to_json(user)
+        assert result == {"name": "Alice", "age": value_to_json(30), "active": True}

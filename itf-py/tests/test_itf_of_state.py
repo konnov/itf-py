@@ -1,13 +1,13 @@
-from itf_py.itf import ITFState, itf_of_state
+from itf_py.itf import ITFState, state_to_json
 
 
 class TestItfOfState:
     """Test encoding Python states to JSON."""
 
-    def test_itf_of_state(self):
+    def test_state_to_json(self):
         """Test encoding a state"""
         state = ITFState(meta={"id": 1}, values={"x": 42, "y": "hello"})
-        result = itf_of_state(state)
+        result = state_to_json(state)
         assert result == {
             "#meta": {"id": 1},
             "x": {"#bigint": "42"},

@@ -1,4 +1,3 @@
-from types import SimpleNamespace, MappingProxyType
 from frozendict import frozendict
 from frozenlist import FrozenList
 
@@ -86,10 +85,12 @@ class TestValueFromJson:
         result = value_from_json(set_of_maps)
         assert isinstance(result, frozenset)
         assert len(result) == 2
-        assert result == frozenset([
-            frozendict({"key1": "value1", "key2": "value2"}),
-            frozendict({"key3": "value3", "key4": "value4"}),
-        ])
+        assert result == frozenset(
+            [
+                frozendict({"key1": "value1", "key2": "value2"}),
+                frozendict({"key3": "value3", "key4": "value4"}),
+            ]
+        )
 
     def test_value_from_json_nested_structures(self):
         """Test decoding nested data structures"""

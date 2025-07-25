@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 from collections import namedtuple
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
 from frozendict import frozendict
 from frozenlist import FrozenList
 
@@ -74,7 +75,7 @@ def value_to_json(val: Any) -> Any:
         return {k: value_to_json(v) for k, v in val.__dict__.items()}
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
         # namedtuple
-        return {k: value_to_json(v) for k, v in val._asdict().items()} # type: ignore
+        return {k: value_to_json(v) for k, v in val._asdict().items()}  # type: ignore
     elif isinstance(val, str):
         return val
     else:

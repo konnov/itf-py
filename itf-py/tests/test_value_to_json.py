@@ -1,5 +1,4 @@
 from collections import namedtuple
-from types import SimpleNamespace
 
 from itf_py.itf import value_to_json
 

@@ -144,6 +144,10 @@ publish-test: build ## Publish to test PyPI
 publish: build ## Publish to PyPI
 	cd $(PROJECT_DIR) && $(POETRY) publish
 
+.PHONY: publish-check
+publish-check: ## Check if package can be published (dry run)
+	cd $(PROJECT_DIR) && $(POETRY) publish --dry-run
+
 # Quick development commands
 .PHONY: quick-test
 quick-test: ## Quick test run (no coverage)

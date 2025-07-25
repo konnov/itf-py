@@ -1,3 +1,4 @@
+from collections import namedtuple
 from types import SimpleNamespace
 
 from itf_py.itf import value_to_json
@@ -69,6 +70,7 @@ class TestValueToJson:
 
     def test_itf_of_named_value(self):
         """Test encoding a record"""
-        user = SimpleNamespace(name="Alice", age=30, active=True)
+        User = namedtuple("User", ["name", "age", "active"])
+        user = User(name="Alice", age=30, active=True)
         result = value_to_json(user)
         assert result == {"name": "Alice", "age": value_to_json(30), "active": True}

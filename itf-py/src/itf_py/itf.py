@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from types import SimpleNamespace
+from collections import namedtuple
 from typing import Any, Dict, List, Optional
+from frozendict import frozendict
+from frozenlist import FrozenList
 
 
 @dataclass
@@ -39,13 +41,17 @@ def value_from_json(val: Any) -> Any:
         elif "#set" in val:
             return frozenset(value_from_json(v) for v in val["#set"])
         elif "#map" in val:
-            return {value_from_json(k): value_from_json(v) for (k, v) in val["#map"]}
+            d = {value_from_json(k): value_from_json(v) for (k, v) in val["#map"]}
+            return frozendict(d)  # immutable dictionary
         elif "#unserializable" in val:
             return ITFUnserializable(value=val["#unserializable"])
         else:
-            return SimpleNamespace(**{k: value_from_json(v) for k, v in val.items()})
+            tup_type = namedtuple("ITFRecord", val.keys())
+            return tup_type(**{k: value_from_json(v) for k, v in val.items()})
     elif isinstance(val, list):
-        return [value_from_json(v) for v in val]
+        lst = FrozenList([value_from_json(v) for v in val])
+        lst.freeze()  # make it immutable
+        return lst
     else:
         return val  # int, str, bool
 
@@ -56,16 +62,19 @@ def value_to_json(val: Any) -> Any:
         return val
     elif isinstance(val, int):
         return {"#bigint": str(val)}
-    elif isinstance(val, tuple):
+    elif isinstance(val, tuple) and not hasattr(val, "_fields"):
         return {"#tup": [value_to_json(v) for v in val]}
     elif isinstance(val, frozenset):
         return {"#set": [value_to_json(v) for v in val]}
     elif isinstance(val, dict):
         return {"#map": [[value_to_json(k), value_to_json(v)] for k, v in val.items()]}
-    elif isinstance(val, list):
+    elif isinstance(val, list) or isinstance(val, FrozenList):
         return [value_to_json(v) for v in val]
     elif hasattr(val, "__dict__"):
         return {k: value_to_json(v) for k, v in val.__dict__.items()}
+    elif isinstance(val, tuple) and hasattr(val, "_fields"):
+        # namedtuple
+        return {k: value_to_json(v) for k, v in val._asdict().items()} # type: ignore
     elif isinstance(val, str):
         return val
     else:

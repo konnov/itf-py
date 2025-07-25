@@ -80,6 +80,14 @@ def state_of_itf(raw_state: Dict[str, Any]) -> ITFState:
     return ITFState(meta=state_meta, values=values)
 
 
+def itf_of_state(state: ITFState) -> Dict[str, Any]:
+    """Encode a single ITFState to its ITF JSON representation"""
+    result = {"#meta": state.meta}
+    for k, v in state.values.items():
+        result[k] = itf_of_value(v)
+    return result
+
+
 def trace_of_itf(data: Dict[str, Any]) -> ITFTrace:
     """Decode an ITFTrace from its ITF JSON representation"""
     meta = data["#meta"] if "#meta" in data else {}

@@ -1,6 +1,4 @@
-from types import SimpleNamespace
-
-from itf_py.itf import itf_of_state, ITFState
+from itf_py.itf import ITFState, itf_of_state
 
 
 class TestItfOfState:

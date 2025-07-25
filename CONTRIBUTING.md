@@ -1,8 +1,26 @@
-# GitHub Actions CI/CD
+# Contributing
 
-This repository includes comprehensive GitHub Actions workflows for continuous integration and code quality.
+## Development
 
-## Workflows
+This project uses a Makefile for common development tasks. Run `make help` to see all available commands:
+
+```bash
+make test          # Run tests
+make test-cov      # Run tests with coverage
+make format        # Format code with black and isort
+make lint          # Run linting with flake8
+make check         # Run all code quality checks
+make ci            # Run full CI pipeline locally
+make build         # Build the package
+```
+
+For a complete list of available commands, run:
+
+```bash
+make help
+```
+
+## GitHub Actions CI/CD
 
 ### CI Workflow (`.github/workflows/ci.yml`)
 

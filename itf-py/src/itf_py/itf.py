@@ -47,7 +47,7 @@ def value_from_json(val: Any) -> Any:
         elif "#unserializable" in val:
             return ITFUnserializable(value=val["#unserializable"])
         else:
-            tup_type = namedtuple("ITFRecord", val.keys())
+            tup_type = namedtuple("ITFRecord", val.keys())  # type: ignore
             return tup_type(**{k: value_from_json(v) for k, v in val.items()})
     elif isinstance(val, list):
         lst = FrozenList([value_from_json(v) for v in val])

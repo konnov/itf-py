@@ -1,4 +1,4 @@
-from itf_py.itf import trace_to_json, ITFTrace, ITFState
+from itf_py.itf import ITFState, ITFTrace, trace_to_json
 
 
 class TestTraceToJson:
@@ -14,7 +14,7 @@ class TestTraceToJson:
             states=[
                 ITFState(meta={"no": 0}, values={"N": 3, "pc": "init", "x": 42}),
                 ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43}),
-            ]
+            ],
         )
         output = trace_to_json(input)
         expected = {
@@ -34,7 +34,7 @@ class TestTraceToJson:
                     "pc": "lock",
                     "x": {"#bigint": "43"},
                 },
-            ]
+            ],
         }
-        
+
         assert output == expected

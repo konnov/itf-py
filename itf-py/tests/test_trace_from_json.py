@@ -23,7 +23,7 @@ class TestTraceFromJson:
                     "pc": "lock",
                     "x": {"#bigint": "43"},
                 },
-            ]
+            ],
         }
         output = trace_from_json(input)
         assert output.meta == {"id": 23}

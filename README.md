@@ -53,7 +53,7 @@ We simply import the required function and parse the input:
 
 <!-- name: test_trace -->
 ```python
-from itf_py.itf import ITFState, ITFTrace, trace_from_json
+from itf_py import ITFState, ITFTrace, trace_from_json
 output = trace_from_json(trace_json)
 trace = ITFTrace(
     meta={"id": 23},
@@ -72,7 +72,7 @@ We serialize `trace` back to its JSON form:
 
 <!-- name: test_trace -->
 ```python
-from itf_py.itf import trace_to_json
+from itf_py import trace_to_json
 output = trace_to_json(trace)
 assert output == trace_json, f"{output} != {trace_json}"
 ```
@@ -85,7 +85,7 @@ state. In this case, you can deserialize and serialize states via
 
 <!-- name: test_state -->
 ```python
-from itf_py.itf import ITFState, state_from_json, state_to_json
+from itf_py import ITFState, state_from_json, state_to_json
 state_json = {
     "#meta": {"no": 1},
     "pc": "lock",
@@ -106,7 +106,7 @@ demonstrate how values of different types are serialized and de-serialized:
 
 <!-- name: test_values -->
 ```python
-from itf_py.itf import value_from_json, value_to_json
+from itf_py import value_from_json, value_to_json
 
 # primitive values are easy, except integers are wrapped
 assert value_to_json("hello") == "hello"

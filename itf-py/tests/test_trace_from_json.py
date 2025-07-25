@@ -1,4 +1,4 @@
-from itf_py.itf import trace_from_json
+from itf_py.itf import ITFState, ITFTrace, trace_from_json
 
 
 class TestTraceFromJson:
@@ -26,12 +26,14 @@ class TestTraceFromJson:
             ],
         }
         output = trace_from_json(input)
-        assert output.meta == {"id": 23}
-        assert output.params == ["N"]
-        assert output.vars == ["pc", "x"]
-        assert output.loop == 0
-        assert len(output.states) == 2
-        assert output.states[0].meta == {"no": 0}
-        assert output.states[0].values == {"N": 3, "pc": "init", "x": 42}
-        assert output.states[1].meta == {"no": 1}
-        assert output.states[1].values == {"pc": "lock", "x": 43}
+        expected = ITFTrace(
+            meta={"id": 23},
+            params=["N"],
+            vars=["pc", "x"],
+            loop=0,
+            states=[
+                ITFState(meta={"no": 0}, values={"N": 3, "pc": "init", "x": 42}),
+                ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43}),
+            ],
+        )
+        assert output == expected, f"{output} != {expected}"

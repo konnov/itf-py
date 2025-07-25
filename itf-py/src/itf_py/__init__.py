@@ -7,4 +7,11 @@ from .itf import ITFState
 __version__ = "0.1.0"
 __all__ = [
     "ITFState",
+    "ITFTrace",
+    "value_to_json",
+    "value_from_json",
+    "state_to_json",
+    "state_from_json",
+    "trace_to_json",
+    "trace_from_json",
 ]

@@ -5,5 +5,6 @@ Python library to parse and emit Apalache ITF traces. Refer to
 traces are emitted by [Apalache](https://github.com/apalache-mc/apalache) and
 [Quint](https://github.com/informalsystems/quint).
 
-**No fluff.** We keep this library intentionally minimalistic. You can use it in
-your projects without worrying about pulling dozens of dependencies.
+**Intentionally minimalistic.** We keep this library intentionally minimalistic.
+You can use it in your projects without worrying about pulling dozens of
+dependencies.

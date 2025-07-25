@@ -15,6 +15,9 @@ dependencies. The package depends on `frozendict` and `frozenlist`.
 **Why?** It's much more convenient to manipulate with trace data in an
 interactive prompt, similar to SQL.
 
+**Alternatives.** If you need to deserialize/serialize ITF traces in Rust, check
+[itf-rs][].
+
 ## Installation
 
 Simply use: `pip install itf-py`.
@@ -169,3 +172,4 @@ assert output == ITFUnserializable("custom-repr")
 [ADR015]: https://apalache-mc.org/docs/adr/015adr-trace.html
 [Apalache]: https://github.com/apalache-mc/apalache
 [Quint]: https://github.com/informalsystems/quint
+[itf-rs]: https://github.com/informalsystems/itf-rs

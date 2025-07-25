@@ -116,7 +116,7 @@ assert value_to_json(True) == True
 assert value_to_json(3) == {"#bigint": "3"}
 assert value_from_json({"#bigint": "3"}) == 3
 
-# lists (sequences) are serialized as JSON arrays
+# lists are serialized as JSON arrays
 assert value_to_json(["a", "b", "c"]) == ["a", "b", "c"]
 # ...and deserialized as frozenlists
 from frozenlist import FrozenList
@@ -134,7 +134,7 @@ assert "a" in j["#set"] and "b" in j["#set"] and "c" in j["#set"]
 # ...and deserialized as frozen sets
 assert value_from_json({"#set": ["a", "b", "c"]}) == frozenset(["a", "b", "c"])
 
-# objects-like records are serialized as JSON objects
+# object-like records are serialized as JSON objects
 from collections import namedtuple
 User = namedtuple("Anon", ["name", "age", "active"])
 user = User(name="Alice", age=30, active=True)

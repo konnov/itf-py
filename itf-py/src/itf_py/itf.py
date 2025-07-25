@@ -97,6 +97,7 @@ def trace_from_json(data: Dict[str, Any]) -> ITFTrace:
     states = [state_from_json(s) for s in data["states"]]
     return ITFTrace(meta=meta, params=params, vars=vars_, states=states, loop=loop)
 
+
 def trace_to_json(trace: ITFTrace) -> Dict[str, Any]:
     """Serialize an ITFTrace to JSON"""
     result: Dict[str, Any] = {"#meta": trace.meta}
@@ -105,6 +106,7 @@ def trace_to_json(trace: ITFTrace) -> Dict[str, Any]:
     result["loop"] = trace.loop
     result["states"] = [state_to_json(s) for s in trace.states]
     return result
+
 
 def load_itf(json_str: str) -> ITFTrace:
     """Load an ITF trace from a JSON string"""

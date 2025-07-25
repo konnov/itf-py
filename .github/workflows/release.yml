@@ -75,30 +75,12 @@ jobs:
         poetry install
         poetry build
 
-    - name: Generate changelog
-      run: |
-        # Simple changelog generation
-        echo "## Changes in v${NEW_VERSION}" > CHANGELOG_ENTRY.md
-        echo "" >> CHANGELOG_ENTRY.md
-        echo "### What's Changed" >> CHANGELOG_ENTRY.md
-        
-        # Get commits since last tag
-        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-        if [ -n "$LAST_TAG" ]; then
-          git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD >> CHANGELOG_ENTRY.md
-        else
-          echo "- Initial release" >> CHANGELOG_ENTRY.md
-        fi
-        
-        echo "" >> CHANGELOG_ENTRY.md
-        echo "**Full Changelog**: https://github.com/${{ github.repository }}/commits/v${NEW_VERSION}" >> CHANGELOG_ENTRY.md
-
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: "v${{ env.NEW_VERSION }}"
         name: "Release v${{ env.NEW_VERSION }}"
-        body_path: CHANGELOG_ENTRY.md
+        body_path: CHANGELOG.md
         draft: false
         prerelease: ${{ github.event.inputs.prerelease }}
         files: |

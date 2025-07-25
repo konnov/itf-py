@@ -5,6 +5,7 @@ description = "Python library to parse and emit Apalache ITF traces"
 homepage = "https://github.com/konnov/itf-py"
 authors = ["Igor Konnov <igor@konnov.phd>"]
 readme = "README.md"
+tags = ["itf", "trace", "parser", "tlaplus", "apalache", "quint"]
 packages = [{include = "itf_py", from = "src"}]
 
 [tool.poetry.dependencies]

@@ -31,10 +31,10 @@ class ImmutableList(list):
 
     def __init__(self, items: Iterable[Any]):
         super().__init__(items)
-    
+
     def __hash__(self):
         return hash(tuple(self))
-    
+
     def _forbid_modification(self):
         """Forbid modification of the list."""
         raise TypeError("This list is immutable and cannot be modified.")
@@ -44,7 +44,7 @@ class ImmutableList(list):
 
     def __delitem__(self, _key):
         self._forbid_modification()
-    
+
     def append(self, _value):
         self._forbid_modification()
 
@@ -56,15 +56,16 @@ class ImmutableList(list):
 
     def pop(self, _index=-1):
         self._forbid_modification()
-    
+
     def remove(self, _value):
         self._forbid_modification()
 
     def clear(self):
         self._forbid_modification()
-    
+
     def reverse(self) -> None:
         self._forbid_modification()
+
 
 class ImmutableDict(frozendict):
     """A wrapper around frozendict that displays dictionaries as `{k1: v_1, ..., k_n: v_n}`."""
@@ -72,9 +73,14 @@ class ImmutableDict(frozendict):
     def __init__(self, items: Dict[str, Any]):
         super().__init__(items)
 
-ImmutableDict.__str__ = dict.__str__  # use the default dict representation in pretty-printing
 
-ImmutableDict.__repr__ = dict.__repr__  # use the default dict representation in pretty-printing
+ImmutableDict.__str__ = (
+    dict.__str__
+)  # use the default dict representation in pretty-printing
+
+ImmutableDict.__repr__ = (
+    dict.__repr__
+)  # use the default dict representation in pretty-printing
 
 
 @dataclass
@@ -104,7 +110,9 @@ def value_from_json(val: Any) -> Any:
                 # This is a tagged union, e.g., {"tag": "Banana", "value": {...}}.
                 # Produce Banana(...)
                 union_type = namedtuple(val["tag"], val["value"].keys())  # type: ignore
-                return union_type(**{k: value_from_json(v) for k, v in val["value"].items()})
+                return union_type(
+                    **{k: value_from_json(v) for k, v in val["value"].items()}
+                )
             else:
                 # This is a general record, e.g., {"field1": ..., "field2": ...}.
                 rec_type = namedtuple("Rec", val.keys())  # type: ignore

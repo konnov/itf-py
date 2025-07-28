@@ -1,6 +1,6 @@
 from frozendict import frozendict
 
-from itf_py.itf import ITFUnserializable, value_from_json, ImmutableList
+from itf_py.itf import ImmutableList, ITFUnserializable, value_from_json
 
 
 class TestValueFromJson:

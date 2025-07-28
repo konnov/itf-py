@@ -167,8 +167,57 @@ output = value_from_json({"#unserializable": "custom-repr"})
 assert output == ITFUnserializable("custom-repr")
 ```
 
+### Pretty-printing
+
+The deserialized values support nice pretty-printing:
+
+<!-- name: test_values -->
+```python
+from pprint import pp, pformat
+
+pp(value_from_json({"#set": ["a", "b", "c"]}))
+# prints frozenset({'a', 'b', 'c'})
+# ...or frozenset in another order
+
+s = pformat(value_from_json({"#map": [["a", "b"], ["c", "d"]]}))
+assert s == "{'a': 'b', 'c': 'd'}"
+
+s = pformat(value_from_json(["a", "b", "c", "d"]))
+assert s == "['a', 'b', 'c', 'd']"
+
+s = pformat(value_from_json({"name": "Alice", "age": 30, "active": True}))
+assert s == "Rec(name='Alice', age=30, active=True)", f"unexpected: {s}"
+```
+
+Tagged unions have beatified output:
+
+<!-- name: test_values -->
+```python
+j = {"tag": "Banana", "value": {"length": 5, "color": "yellow"}}
+s = pformat(value_from_json(j))
+assert s == "Banana(length=5, color='yellow')", f"unexpected: {s}"
+```
+
+### Colorized pretty-printing
+
+This module offers no special support for colorized output. However,
+it works out-of-the-box with [rich][]. If you are already using 
+[IPython][], it's really easy:
+
+```python
+from rich import pretty
+from itf_py import value_from_json
+
+pretty.install()
+value_from_json({"name": "Alice", "age": 30, "active": True})
+# Rec(name='Alice', age=30, active=True)
+#   in nice colors!
+```
+
 
 [ADR015]: https://apalache-mc.org/docs/adr/015adr-trace.html
 [Apalache]: https://github.com/apalache-mc/apalache
 [Quint]: https://github.com/informalsystems/quint
 [itf-rs]: https://github.com/informalsystems/itf-rs
+[rich]: https://pypi.org/project/rich/
+[IPython]: https://ipython.org/

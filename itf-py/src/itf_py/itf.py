@@ -25,9 +25,11 @@ class Trace:
 
 
 class ImmutableList(list):
-    """An immutable wrapper around list that supports hashing, yet displays as a list."""
+    """An immutable wrapper around list that supports hashing,
+    yet displays as a list."""
 
-    # frozenlist.FrozenList is what we want, but it does not display nicely in pretty-printing.
+    # frozenlist.FrozenList is what we want, but it does not display
+    # nicely in pretty-printing.
 
     def __init__(self, items: Iterable[Any]):
         super().__init__(items)
@@ -68,7 +70,8 @@ class ImmutableList(list):
 
 
 class ImmutableDict(frozendict):
-    """A wrapper around frozendict that displays dictionaries as `{k1: v_1, ..., k_n: v_n}`."""
+    """A wrapper around frozendict that displays dictionaries as
+    `{k1: v_1, ..., k_n: v_n}`."""
 
     def __init__(self, items: Dict[str, Any]):
         super().__init__(items)

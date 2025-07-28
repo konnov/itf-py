@@ -5,7 +5,7 @@ the format. ITF traces are emitted by [Apalache][] and [Quint][].
 
 **Intentionally minimalistic.** We keep this library intentionally minimalistic.
 You can use it in your projects without worrying about pulling dozens of
-dependencies. The package depends on `frozendict` and `frozenlist`.
+dependencies. The package depends on `frozendict`.
 
 **Why?** It's much more convenient to manipulate with trace data in an
 interactive prompt, similar to SQL.

@@ -1,13 +1,12 @@
 from collections import namedtuple
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from frozendict import frozendict
-from frozenlist import FrozenList
 
 
 @dataclass
-class ITFState:
+class State:
     """A single state in an ITF trace as a Python object."""
 
     meta: Dict[str, Any]
@@ -15,14 +14,67 @@ class ITFState:
 
 
 @dataclass
-class ITFTrace:
+class Trace:
     """An ITF trace as a Python object."""
 
     meta: Dict[str, Any]
     params: List[str]
     vars: List[str]
-    states: List[ITFState]
+    states: List[State]
     loop: Optional[int]
+
+
+class ImmutableList(list):
+    """An immutable wrapper around list that supports hashing, yet displays as a list."""
+
+    # frozenlist.FrozenList is what we want, but it does not display nicely in pretty-printing.
+
+    def __init__(self, items: Iterable[Any]):
+        super().__init__(items)
+    
+    def __hash__(self):
+        return hash(tuple(self))
+    
+    def _forbid_modification(self):
+        """Forbid modification of the list."""
+        raise TypeError("This list is immutable and cannot be modified.")
+
+    def __setitem__(self, _key, _value):
+        self._forbid_modification()
+
+    def __delitem__(self, _key):
+        self._forbid_modification()
+    
+    def append(self, _value):
+        self._forbid_modification()
+
+    def extend(self, _values):
+        self._forbid_modification()
+
+    def insert(self, _index, _value):
+        self._forbid_modification()
+
+    def pop(self, _index=-1):
+        self._forbid_modification()
+    
+    def remove(self, _value):
+        self._forbid_modification()
+
+    def clear(self):
+        self._forbid_modification()
+    
+    def reverse(self) -> None:
+        self._forbid_modification()
+
+class ImmutableDict(frozendict):
+    """A wrapper around frozendict that displays dictionaries as `{k1: v_1, ..., k_n: v_n}`."""
+
+    def __init__(self, items: Dict[str, Any]):
+        super().__init__(items)
+
+ImmutableDict.__str__ = dict.__str__  # use the default dict representation in pretty-printing
+
+ImmutableDict.__repr__ = dict.__repr__  # use the default dict representation in pretty-printing
 
 
 @dataclass
@@ -43,16 +95,22 @@ def value_from_json(val: Any) -> Any:
             return frozenset(value_from_json(v) for v in val["#set"])
         elif "#map" in val:
             d = {value_from_json(k): value_from_json(v) for (k, v) in val["#map"]}
-            return frozendict(d)  # immutable dictionary
+            return ImmutableDict(d)
         elif "#unserializable" in val:
             return ITFUnserializable(value=val["#unserializable"])
         else:
-            tup_type = namedtuple("ITFRecord", val.keys())  # type: ignore
-            return tup_type(**{k: value_from_json(v) for k, v in val.items()})
+            ks = val.keys()
+            if len(ks) == 2 and "tag" in ks and "value" in ks:
+                # This is a tagged union, e.g., {"tag": "Banana", "value": {...}}.
+                # Produce Banana(...)
+                union_type = namedtuple(val["tag"], val["value"].keys())  # type: ignore
+                return union_type(**{k: value_from_json(v) for k, v in val["value"].items()})
+            else:
+                # This is a general record, e.g., {"field1": ..., "field2": ...}.
+                rec_type = namedtuple("Rec", val.keys())  # type: ignore
+                return rec_type(**{k: value_from_json(v) for k, v in val.items()})
     elif isinstance(val, list):
-        lst = FrozenList([value_from_json(v) for v in val])
-        lst.freeze()  # make it immutable
-        return lst
+        return ImmutableList([value_from_json(v) for v in val])
     else:
         return val  # int, str, bool
 
@@ -69,9 +127,11 @@ def value_to_json(val: Any) -> Any:
         return {"#set": [value_to_json(v) for v in val]}
     elif isinstance(val, dict):
         return {"#map": [[value_to_json(k), value_to_json(v)] for k, v in val.items()]}
-    elif isinstance(val, list) or isinstance(val, FrozenList):
+    elif isinstance(val, list):
         return [value_to_json(v) for v in val]
     elif hasattr(val, "__dict__"):
+        # An object-like structure, e.g., a record, or a union.
+        # Note that we cannot distinguish between a record and a tagged union here.
         return {k: value_to_json(v) for k, v in val.__dict__.items()}
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
         # namedtuple
@@ -82,14 +142,14 @@ def value_to_json(val: Any) -> Any:
         return ITFUnserializable(value=str(val))
 
 
-def state_from_json(raw_state: Dict[str, Any]) -> ITFState:
+def state_from_json(raw_state: Dict[str, Any]) -> State:
     """Deserialize a single ITFState from JSON"""
     state_meta = raw_state["#meta"] if "#meta" in raw_state else {}
     values = {k: value_from_json(v) for k, v in raw_state.items() if k != "#meta"}
-    return ITFState(meta=state_meta, values=values)
+    return State(meta=state_meta, values=values)
 
 
-def state_to_json(state: ITFState) -> Dict[str, Any]:
+def state_to_json(state: State) -> Dict[str, Any]:
     """Serialize a single ITFState to JSON"""
     result = {"#meta": state.meta}
     for k, v in state.values.items():
@@ -97,17 +157,17 @@ def state_to_json(state: ITFState) -> Dict[str, Any]:
     return result
 
 
-def trace_from_json(data: Dict[str, Any]) -> ITFTrace:
+def trace_from_json(data: Dict[str, Any]) -> Trace:
     """Deserialize an ITFTrace from JSON"""
     meta = data["#meta"] if "#meta" in data else {}
     params = data.get("params", [])
     vars_ = data["vars"]
     loop = data.get("loop", None)
     states = [state_from_json(s) for s in data["states"]]
-    return ITFTrace(meta=meta, params=params, vars=vars_, states=states, loop=loop)
+    return Trace(meta=meta, params=params, vars=vars_, states=states, loop=loop)
 
 
-def trace_to_json(trace: ITFTrace) -> Dict[str, Any]:
+def trace_to_json(trace: Trace) -> Dict[str, Any]:
     """Serialize an ITFTrace to JSON"""
     result: Dict[str, Any] = {"#meta": trace.meta}
     result["params"] = trace.params

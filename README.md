@@ -10,12 +10,12 @@ the format. ITF traces are emitted by [Apalache][] and [Quint][].
 
 **Intentionally minimalistic.** We keep this library intentionally minimalistic.
 You can use it in your projects without worrying about pulling dozens of
-dependencies. The package depends on `frozendict` and `frozenlist`.
+dependencies. The package depends on `frozendict`.
 
 **Why?** It's much more convenient to manipulate with trace data in an
 interactive prompt, similar to SQL.
 
-**Alternatives.** If you need to deserialize/serialize ITF traces in Rust, check
+**Alternatives.** If you need to (de-)serialize ITF traces in Rust, check
 [itf-rs][].
 
 ## Installation
@@ -80,10 +80,10 @@ output = trace_to_json(trace)
 assert output == trace_json, f"{output} != {trace_json}"
 ```
 
-### Deserializing and serializing states
+### De-(serializing) states
 
 Sometimes, you do not want to deal with whole traces, but only with a single
-state. In this case, you can deserialize and serialize states via
+state. In this case, you can (de-)serialize states via
 `state_from_json` and `state_to_json`:
 
 <!-- name: test_state -->
@@ -102,10 +102,10 @@ output = state_to_json(state)
 assert output == state_json, f"{output} != {state_json}"
 ```
 
-### Deserializing and serializing values
+### (De-)serializing values
 
 Finally, you can work at the level of individual values. The following examples
-demonstrate how values of different types are serialized and de-serialized:
+demonstrate how values of different types are (de-)serialized:
 
 <!-- name: test_values -->
 ```python

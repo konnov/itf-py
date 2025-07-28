@@ -56,16 +56,16 @@ We simply import the required function and parse the input:
 
 <!-- name: test_trace -->
 ```python
-from itf_py import ITFState, ITFTrace, trace_from_json
+from itf_py import State, Trace, trace_from_json
 output = trace_from_json(trace_json)
-trace = ITFTrace(
+trace = Trace(
     meta={"id": 23},
     params=["N"],
     vars=["pc", "x"],
     loop=0,
     states=[
-        ITFState(meta={"no": 0}, values={"N": 3, "pc": "idle", "x": 42}),
-        ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43}),
+        State(meta={"no": 0}, values={"N": 3, "pc": "idle", "x": 42}),
+        State(meta={"no": 1}, values={"pc": "lock", "x": 43}),
     ],
 )
 assert output == trace, f"{output} != {trace}"
@@ -88,14 +88,14 @@ state. In this case, you can (de-)serialize states via
 
 <!-- name: test_state -->
 ```python
-from itf_py import ITFState, state_from_json, state_to_json
+from itf_py import State, state_from_json, state_to_json
 state_json = {
     "#meta": {"no": 1},
     "pc": "lock",
     "x": {"#bigint": "43"},
 }
 output = state_from_json(state_json)
-state = ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43})
+state = State(meta={"no": 1}, values={"pc": "lock", "x": 43})
 assert output == state, f"{output} != {state}"
 
 output = state_to_json(state)

@@ -121,9 +121,8 @@ assert value_from_json({"#bigint": "3"}) == 3
 
 # lists are serialized as JSON arrays
 assert value_to_json(["a", "b", "c"]) == ["a", "b", "c"]
-# ...and deserialized as frozenlists
-from frozenlist import FrozenList
-assert value_from_json(["a", "b", "c"]) == FrozenList(["a", "b", "c"])
+# ...and deserialized as immutable lists
+assert value_from_json(["a", "b", "c"]) == ["a", "b", "c"]
 
 # tuples are wrapped JSON arrays
 assert value_to_json(("a", "b", "c")) == {"#tup": ["a", "b", "c"]}

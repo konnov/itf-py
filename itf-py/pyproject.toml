@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "itf-py"
-version = "0.2.2"
+version = "0.3.0"
 description = "Python library to parse and emit Apalache/Quint traces in ITF JSON"
 homepage = "https://github.com/konnov/itf-py"
 authors = ["Igor Konnov <igor@konnov.phd>"]
@@ -11,7 +11,6 @@ packages = [{include = "itf_py", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.12"
 frozendict = "^2.4.6"
-frozenlist = "^1.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

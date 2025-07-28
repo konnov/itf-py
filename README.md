@@ -10,12 +10,12 @@ the format. ITF traces are emitted by [Apalache][] and [Quint][].
 
 **Intentionally minimalistic.** We keep this library intentionally minimalistic.
 You can use it in your projects without worrying about pulling dozens of
-dependencies. The package depends on `frozendict` and `frozenlist`.
+dependencies. The package depends on `frozendict`.
 
 **Why?** It's much more convenient to manipulate with trace data in an
 interactive prompt, similar to SQL.
 
-**Alternatives.** If you need to deserialize/serialize ITF traces in Rust, check
+**Alternatives.** If you need to (de-)serialize ITF traces in Rust, check
 [itf-rs][].
 
 ## Installation
@@ -56,16 +56,16 @@ We simply import the required function and parse the input:
 
 <!-- name: test_trace -->
 ```python
-from itf_py import ITFState, ITFTrace, trace_from_json
+from itf_py import State, Trace, trace_from_json
 output = trace_from_json(trace_json)
-trace = ITFTrace(
+trace = Trace(
     meta={"id": 23},
     params=["N"],
     vars=["pc", "x"],
     loop=0,
     states=[
-        ITFState(meta={"no": 0}, values={"N": 3, "pc": "idle", "x": 42}),
-        ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43}),
+        State(meta={"no": 0}, values={"N": 3, "pc": "idle", "x": 42}),
+        State(meta={"no": 1}, values={"pc": "lock", "x": 43}),
     ],
 )
 assert output == trace, f"{output} != {trace}"
@@ -80,32 +80,32 @@ output = trace_to_json(trace)
 assert output == trace_json, f"{output} != {trace_json}"
 ```
 
-### Deserializing and serializing states
+### De-(serializing) states
 
 Sometimes, you do not want to deal with whole traces, but only with a single
-state. In this case, you can deserialize and serialize states via
+state. In this case, you can (de-)serialize states via
 `state_from_json` and `state_to_json`:
 
 <!-- name: test_state -->
 ```python
-from itf_py import ITFState, state_from_json, state_to_json
+from itf_py import State, state_from_json, state_to_json
 state_json = {
     "#meta": {"no": 1},
     "pc": "lock",
     "x": {"#bigint": "43"},
 }
 output = state_from_json(state_json)
-state = ITFState(meta={"no": 1}, values={"pc": "lock", "x": 43})
+state = State(meta={"no": 1}, values={"pc": "lock", "x": 43})
 assert output == state, f"{output} != {state}"
 
 output = state_to_json(state)
 assert output == state_json, f"{output} != {state_json}"
 ```
 
-### Deserializing and serializing values
+### (De-)serializing values
 
 Finally, you can work at the level of individual values. The following examples
-demonstrate how values of different types are serialized and de-serialized:
+demonstrate how values of different types are (de-)serialized:
 
 <!-- name: test_values -->
 ```python
@@ -121,9 +121,8 @@ assert value_from_json({"#bigint": "3"}) == 3
 
 # lists are serialized as JSON arrays
 assert value_to_json(["a", "b", "c"]) == ["a", "b", "c"]
-# ...and deserialized as frozenlists
-from frozenlist import FrozenList
-assert value_from_json(["a", "b", "c"]) == FrozenList(["a", "b", "c"])
+# ...and deserialized as immutable lists
+assert value_from_json(["a", "b", "c"]) == ["a", "b", "c"]
 
 # tuples are wrapped JSON arrays
 assert value_to_json(("a", "b", "c")) == {"#tup": ["a", "b", "c"]}
@@ -168,8 +167,57 @@ output = value_from_json({"#unserializable": "custom-repr"})
 assert output == ITFUnserializable("custom-repr")
 ```
 
+### Pretty-printing
+
+The deserialized values support nice pretty-printing:
+
+<!-- name: test_values -->
+```python
+from pprint import pp, pformat
+
+pp(value_from_json({"#set": ["a", "b", "c"]}))
+# prints frozenset({'a', 'b', 'c'})
+# ...or frozenset in another order
+
+s = pformat(value_from_json({"#map": [["a", "b"], ["c", "d"]]}))
+assert s == "{'a': 'b', 'c': 'd'}"
+
+s = pformat(value_from_json(["a", "b", "c", "d"]))
+assert s == "['a', 'b', 'c', 'd']"
+
+s = pformat(value_from_json({"name": "Alice", "age": 30, "active": True}))
+assert s == "Rec(name='Alice', age=30, active=True)", f"unexpected: {s}"
+```
+
+Tagged unions have beatified output:
+
+<!-- name: test_values -->
+```python
+j = {"tag": "Banana", "value": {"length": 5, "color": "yellow"}}
+s = pformat(value_from_json(j))
+assert s == "Banana(length=5, color='yellow')", f"unexpected: {s}"
+```
+
+### Colorized pretty-printing
+
+This module offers no special support for colorized output. However,
+it works out-of-the-box with [rich][]. If you are already using 
+[IPython][], it's really easy:
+
+```python
+from rich import pretty
+from itf_py import value_from_json
+
+pretty.install()
+value_from_json({"name": "Alice", "age": 30, "active": True})
+# Rec(name='Alice', age=30, active=True)
+#   in nice colors!
+```
+
 
 [ADR015]: https://apalache-mc.org/docs/adr/015adr-trace.html
 [Apalache]: https://github.com/apalache-mc/apalache
 [Quint]: https://github.com/informalsystems/quint
 [itf-rs]: https://github.com/informalsystems/itf-rs
+[rich]: https://pypi.org/project/rich/
+[IPython]: https://ipython.org/

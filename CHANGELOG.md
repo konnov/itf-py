@@ -1,3 +1,20 @@
+## [0.3.0] - 2025-07-28
+### Added
+
+ - Wrappers around `list` and `frozendict` to support nice pretty-printing
+
+### Changed
+
+ - Rename `ITFTrace` and `ITFState` to `Trace` and `State` to save the screen
+ commodity
+
+ - Deserialize tagged unions such as `{"tag": "Banana", "value": {"length": 5,
+ "color": "yellow"}}` as special kind of named tuples, e.g., `Banana(length=5,
+ color="yellow")`.
+
+ - Deserialize records that are not tagged unions as named tuples of class
+ `Rec`, e.g., `Rec(name="Alice", age=99)`.
+
 ## [0.2.1] - 2025-07-25
 ### Changed
 

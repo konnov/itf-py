@@ -65,7 +65,7 @@ class ImmutableList(list):
     def clear(self):
         self._forbid_modification()
 
-    def reverse(self) -> None:
+    def reverse(self) -> NoReturn:
         self._forbid_modification()
 
 
@@ -154,14 +154,14 @@ def value_to_json(val: Any) -> Any:
 
 
 def state_from_json(raw_state: Dict[str, Any]) -> State:
-    """Deserialize a single ITFState from JSON"""
+    """Deserialize a single State from JSON"""
     state_meta = raw_state["#meta"] if "#meta" in raw_state else {}
     values = {k: value_from_json(v) for k, v in raw_state.items() if k != "#meta"}
     return State(meta=state_meta, values=values)
 
 
 def state_to_json(state: State) -> Dict[str, Any]:
-    """Serialize a single ITFState to JSON"""
+    """Serialize a single State to JSON"""
     result = {"#meta": state.meta}
     for k, v in state.values.items():
         result[k] = value_to_json(v)
@@ -169,7 +169,7 @@ def state_to_json(state: State) -> Dict[str, Any]:
 
 
 def trace_from_json(data: Dict[str, Any]) -> Trace:
-    """Deserialize an ITFTrace from JSON"""
+    """Deserialize a Trace from JSON"""
     meta = data["#meta"] if "#meta" in data else {}
     params = data.get("params", [])
     vars_ = data["vars"]
@@ -179,7 +179,7 @@ def trace_from_json(data: Dict[str, Any]) -> Trace:
 
 
 def trace_to_json(trace: Trace) -> Dict[str, Any]:
-    """Serialize an ITFTrace to JSON"""
+    """Serialize a Trace to JSON"""
     result: Dict[str, Any] = {"#meta": trace.meta}
     result["params"] = trace.params
     result["vars"] = trace.vars

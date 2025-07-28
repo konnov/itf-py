@@ -1,7 +1,6 @@
 from frozendict import frozendict
-from frozenlist import FrozenList
 
-from itf_py.itf import ITFUnserializable, value_from_json
+from itf_py.itf import ITFUnserializable, value_from_json, ImmutableList
 
 
 class TestValueFromJson:
@@ -64,10 +63,8 @@ class TestValueFromJson:
         result = value_from_json(set_val)
         assert isinstance(result, frozenset)
         assert len(result) == 2
-        list1 = FrozenList([1, 2])
-        list2 = FrozenList([3, 4])
-        list1.freeze()
-        list2.freeze()
+        list1 = ImmutableList([1, 2])
+        list2 = ImmutableList([3, 4])
         assert result == frozenset([list1, list2])
 
     def test_value_from_json_map(self):

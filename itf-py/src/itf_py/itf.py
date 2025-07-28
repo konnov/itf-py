@@ -65,7 +65,7 @@ class ImmutableList(list):
     def clear(self):
         self._forbid_modification()
 
-    def reverse(self) -> NoReturn:
+    def reverse(self):
         self._forbid_modification()
 
 

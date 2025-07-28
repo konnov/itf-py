@@ -113,6 +113,14 @@ class TestValueFromJson:
         assert result.age == 30
         assert result.active is True
 
+    def test_value_from_json_tagged_union(self):
+        """Test decoding a tagged union"""
+        dict_val = {"tag": "Banana", "value": {"length": 5, "color": "yellow"}}
+        result = value_from_json(dict_val)
+        assert result.__class__.__name__ == "Banana"
+        assert result.length == 5
+        assert result.color == "yellow"
+
     def test_value_of_unserializable(self):
         """Test decoding unserializable values"""
         result = value_from_json({"#unserializable": "custom_object"})

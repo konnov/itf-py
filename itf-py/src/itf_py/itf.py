@@ -1,6 +1,6 @@
 from collections import namedtuple
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, NoReturn, Optional, SupportsIndex
 
 from frozendict import frozendict
 
@@ -34,38 +34,38 @@ class ImmutableList(list):
     def __init__(self, items: Iterable[Any]):
         super().__init__(items)
 
-    def __hash__(self):
+    def __hash__(self) -> int:  # type: ignore
         return hash(tuple(self))
 
-    def _forbid_modification(self):
+    def _forbid_modification(self) -> NoReturn:
         """Forbid modification of the list."""
         raise TypeError("This list is immutable and cannot be modified.")
 
-    def __setitem__(self, _key, _value):
+    def __setitem__(self, _key: Any, _value: Any) -> NoReturn:
         self._forbid_modification()
 
-    def __delitem__(self, _key):
+    def __delitem__(self, _key: Any) -> NoReturn:
         self._forbid_modification()
 
-    def append(self, _value):
+    def append(self, _value: Any) -> NoReturn:
         self._forbid_modification()
 
-    def extend(self, _values):
+    def extend(self, _values: Iterable[Any]) -> NoReturn:
         self._forbid_modification()
 
-    def insert(self, _index, _value):
+    def insert(self, _index: SupportsIndex, _value: Any) -> None:
         self._forbid_modification()
 
-    def pop(self, _index=-1):
+    def pop(self, _index: SupportsIndex = -1) -> NoReturn:
         self._forbid_modification()
 
-    def remove(self, _value):
+    def remove(self, _value: Any) -> NoReturn:
         self._forbid_modification()
 
-    def clear(self):
+    def clear(self) -> NoReturn:
         self._forbid_modification()
 
-    def reverse(self):
+    def reverse(self) -> NoReturn:
         self._forbid_modification()
 
 
@@ -73,15 +73,15 @@ class ImmutableDict(frozendict):
     """A wrapper around frozendict that displays dictionaries as
     `{k1: v_1, ..., k_n: v_n}`."""
 
-    def __init__(self, items: Dict[str, Any]):
-        super().__init__(items)
+    def __new__(cls, items: Dict[str, Any]) -> Any:
+        return super().__new__(cls, items)
 
 
-ImmutableDict.__str__ = (
+ImmutableDict.__str__ = (  # type: ignore
     dict.__str__
 )  # use the default dict representation in pretty-printing
 
-ImmutableDict.__repr__ = (
+ImmutableDict.__repr__ = (  # type: ignore
     dict.__repr__
 )  # use the default dict representation in pretty-printing
 

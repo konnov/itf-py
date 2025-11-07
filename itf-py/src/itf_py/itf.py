@@ -115,7 +115,8 @@ def value_from_json(val: Any) -> Any:
                 value_field = val["value"]
                 if isinstance(value_field, dict):
                     # The value is a record: {"tag": "Banana", "value": {"length": 5}}
-                    union_type = namedtuple(val["tag"], value_field.keys())  # type: ignore
+                    # type: ignore
+                    union_type = namedtuple(val["tag"], value_field.keys())
                     return union_type(
                         **{k: value_from_json(v) for k, v in value_field.items()}
                     )

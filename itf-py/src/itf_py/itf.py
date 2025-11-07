@@ -115,18 +115,23 @@ def value_from_json(val: Any) -> Any:
                 value_field = val["value"]
                 if isinstance(value_field, dict):
                     # The value is a record: {"tag": "Banana", "value": {"length": 5}}
-                    # type: ignore
-                    union_type = namedtuple(val["tag"], value_field.keys())
-                    return union_type(
+                    union_type_record = namedtuple(  # type: ignore[misc]
+                        val["tag"], value_field.keys()
+                    )
+                    return union_type_record(
                         **{k: value_from_json(v) for k, v in value_field.items()}
                     )
                 else:
                     # The value is a scalar: {"tag": "Banana", "value": "u_OF_UNIT"}
-                    union_type = namedtuple(val["tag"], ["value"])  # type: ignore
-                    return union_type(value=value_from_json(value_field))
+                    union_type_scalar = namedtuple(  # type: ignore[misc]
+                        val["tag"], ["value"]
+                    )
+                    return union_type_scalar(  # type: ignore[call-arg]
+                        value=value_from_json(value_field)
+                    )
             else:
                 # This is a general record, e.g., {"field1": ..., "field2": ...}.
-                rec_type = namedtuple("Rec", val.keys())  # type: ignore
+                rec_type = namedtuple("Rec", val.keys())  # type: ignore[misc]
                 return rec_type(**{k: value_from_json(v) for k, v in val.items()})
     elif isinstance(val, list):
         return ImmutableList([value_from_json(v) for v in val])

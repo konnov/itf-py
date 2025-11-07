@@ -161,6 +161,17 @@ from frozendict import frozendict
 output = value_from_json({"#map": [["key1", "val1"], ["key2", "val2"]]})
 assert output == frozendict({"key1": "val1", "key2": "val2"})
 
+# Apalache tagged unions are deserialized as special named tuples
+output = value_from_json({"tag": "Banana", "value": {"length": 5, "color": "yellow"}})
+assert output.__class__.__name__ == "Banana"
+assert output.length == 5
+assert output.color == "yellow"
+
+#...but take care when the value is not a record!
+output = value_from_json({"tag": "Init", "value": "u_OF_UNIT"})
+assert output.__class__.__name__ == "Init"
+assert output.value == "u_OF_UNIT"
+
 # finally, unserializable values have special representation
 from itf_py.itf import ITFUnserializable
 output = value_from_json({"#unserializable": "custom-repr"})

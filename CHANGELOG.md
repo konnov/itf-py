@@ -1,3 +1,11 @@
+## [0.4.1] - 2025-11-07
+### Fixed
+
+ - Correctly handle tagged unions with non-record values in
+ `value_from_json`. Previously, such tagged unions were incorrectly treated as
+ records, leading to errors when the value was a scalar (e.g., string or
+ integer).
+
 ## [0.3.0] - 2025-07-28
 ### Added
 

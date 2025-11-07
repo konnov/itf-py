@@ -112,10 +112,17 @@ def value_from_json(val: Any) -> Any:
             if len(ks) == 2 and "tag" in ks and "value" in ks:
                 # This is a tagged union, e.g., {"tag": "Banana", "value": {...}}.
                 # Produce Banana(...)
-                union_type = namedtuple(val["tag"], val["value"].keys())  # type: ignore
-                return union_type(
-                    **{k: value_from_json(v) for k, v in val["value"].items()}
-                )
+                value_field = val["value"]
+                if isinstance(value_field, dict):
+                    # The value is a record: {"tag": "Banana", "value": {"length": 5}}
+                    union_type = namedtuple(val["tag"], value_field.keys())  # type: ignore
+                    return union_type(
+                        **{k: value_from_json(v) for k, v in value_field.items()}
+                    )
+                else:
+                    # The value is a scalar: {"tag": "Banana", "value": "u_OF_UNIT"}
+                    union_type = namedtuple(val["tag"], ["value"])  # type: ignore
+                    return union_type(value=value_from_json(value_field))
             else:
                 # This is a general record, e.g., {"field1": ..., "field2": ...}.
                 rec_type = namedtuple("Rec", val.keys())  # type: ignore
@@ -145,7 +152,7 @@ def value_to_json(val: Any) -> Any:
         # Note that we cannot distinguish between a record and a tagged union here.
         return {k: value_to_json(v) for k, v in val.__dict__.items()}
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
-        # namedtuple
+        # namedtuple (could be a record or tagged union, but we treat them the same)
         return {k: value_to_json(v) for k, v in val._asdict().items()}  # type: ignore
     elif isinstance(val, str):
         return val

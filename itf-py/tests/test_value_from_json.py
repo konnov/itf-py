@@ -114,12 +114,19 @@ class TestValueFromJson:
         assert result.active is True
 
     def test_value_from_json_tagged_union(self):
-        """Test decoding a tagged union"""
+        """Test decoding a tagged union as a record"""
         dict_val = {"tag": "Banana", "value": {"length": 5, "color": "yellow"}}
         result = value_from_json(dict_val)
         assert result.__class__.__name__ == "Banana"
         assert result.length == 5
         assert result.color == "yellow"
+
+    def test_value_from_json_tagged_union_non_record(self):
+        """Test decoding a tagged union as a scalar value"""
+        dict_val = {"tag": "Banana", "value": "u_OF_UNIT"}
+        result = value_from_json(dict_val)
+        assert result.__class__.__name__ == "Banana"
+        assert result.value == "u_OF_UNIT"
 
     def test_value_of_unserializable(self):
         """Test decoding unserializable values"""

@@ -5,6 +5,13 @@ from typing import Any, Dict, Iterable, List, NoReturn, Optional, SupportsIndex
 from frozendict import frozendict
 
 
+def itf_variant(cls):  # type: ignore[no-untyped-def]
+    """Decorator to mark a class as an ITF variant type as opposed to a record."""
+
+    cls._itf_variant = True
+    return cls
+
+
 @dataclass
 class State:
     """A single state in an ITF trace as a Python object."""
@@ -95,7 +102,9 @@ class ITFUnserializable:
 
 def value_from_json(val: Any) -> Any:
     """Deserialize a Python value from JSON"""
-    if isinstance(val, dict):
+    if isinstance(val, list):
+        return ImmutableList([value_from_json(v) for v in val])
+    elif isinstance(val, dict):
         if "#bigint" in val:
             return int(val["#bigint"])
         elif "#tup" in val:
@@ -115,26 +124,22 @@ def value_from_json(val: Any) -> Any:
                 value_field = val["value"]
                 if isinstance(value_field, dict):
                     # The value is a record: {"tag": "Banana", "value": {"length": 5}}
-                    union_type_record = namedtuple(  # type: ignore[misc]
-                        val["tag"], value_field.keys()
+                    # Decorate it with @itf_variant.
+                    union_type_record = itf_variant(
+                        namedtuple(val["tag"], value_field.keys())
                     )
                     return union_type_record(
                         **{k: value_from_json(v) for k, v in value_field.items()}
                     )
                 else:
                     # The value is a scalar: {"tag": "Banana", "value": "u_OF_UNIT"}
-                    union_type_scalar = namedtuple(  # type: ignore[misc]
-                        val["tag"], ["value"]
-                    )
-                    return union_type_scalar(  # type: ignore[call-arg]
-                        value=value_from_json(value_field)
-                    )
+                    # Decorate it with @itf_variant.
+                    union_type_scalar = itf_variant(namedtuple(val["tag"], ["value"]))
+                    return union_type_scalar(value=value_from_json(value_field))
             else:
                 # This is a general record, e.g., {"field1": ..., "field2": ...}.
-                rec_type = namedtuple("Rec", val.keys())  # type: ignore[misc]
+                rec_type = namedtuple("Rec", list(val.keys()))  # type: ignore[misc]
                 return rec_type(**{k: value_from_json(v) for k, v in val.items()})
-    elif isinstance(val, list):
-        return ImmutableList([value_from_json(v) for v in val])
     else:
         return val  # int, str, bool
 
@@ -142,6 +147,8 @@ def value_from_json(val: Any) -> Any:
 def value_to_json(val: Any) -> Any:
     """Serialize a Python value into JSON"""
     if isinstance(val, bool):
+        return val
+    elif isinstance(val, str):
         return val
     elif isinstance(val, int):
         return {"#bigint": str(val)}
@@ -159,9 +166,27 @@ def value_to_json(val: Any) -> Any:
         return {k: value_to_json(v) for k, v in val.__dict__.items()}
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
         # namedtuple (could be a record or tagged union, but we treat them the same)
-        return {k: value_to_json(v) for k, v in val._asdict().items()}  # type: ignore
-    elif isinstance(val, str):
-        return val
+        if not hasattr(val.__class__, "_itf_variant"):
+            # Regular record
+            fields_dict = val._asdict()  # type: ignore[attr-defined]
+            return {k: value_to_json(v) for k, v in fields_dict.items()}
+        else:
+            # This is a tagged union
+            tag_name = val.__class__.__name__
+            fields_dict = val._asdict()  # type: ignore[attr-defined]
+            if len(val._fields) > 1:  # pyright: ignore[reportAttributeAccessIssue]
+                # Multiple fields: {"tag": "Banana", "value": {...}}
+                return {
+                    "tag": tag_name,
+                    "value": {k: value_to_json(v) for k, v in fields_dict.items()},
+                }
+            else:
+                # Single field: {"tag": "Banana", "value": ...}
+                field_name = val._fields[0]  # pyright: ignore
+                return {
+                    "tag": tag_name,
+                    "value": value_to_json(fields_dict[field_name]),
+                }
     else:
         return ITFUnserializable(value=str(val))
 

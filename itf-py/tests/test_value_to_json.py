@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from itf_py.itf import value_to_json
+from itf_py.itf import itf_variant, value_to_json
 
 
 class TestValueToJson:
@@ -73,3 +73,14 @@ class TestValueToJson:
         user = User(name="Alice", age=30, active=True)
         result = value_to_json(user)
         assert result == {"name": "Alice", "age": value_to_json(30), "active": True}
+
+    def test_itf_of_variant(self):
+        """Test encoding a variant"""
+        User = itf_variant(namedtuple("User", ["name", "age", "active"]))
+        user = User(name="Alice", age=30, active=True)
+        result = value_to_json(user)
+        assert result == {
+            "tag": "User",
+            "value": {"name": "Alice", "age": value_to_json(30), "active": True
+            }
+        }

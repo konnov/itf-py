@@ -136,14 +136,28 @@ assert "a" in j["#set"] and "b" in j["#set"] and "c" in j["#set"]
 # ...and deserialized as frozen sets
 assert value_from_json({"#set": ["a", "b", "c"]}) == frozenset(["a", "b", "c"])
 
-# object-like records are serialized as JSON objects
-from collections import namedtuple
-User = namedtuple("Anon", ["name", "age", "active"])
-user = User(name="Alice", age=30, active=True)
-output = value_to_json(user)
+# data classes are serialized as JSON objects
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class User:
+    name: str
+    age: int
+    active: bool
+
+output = value_to_json(User(name="Alice", age=30, active=True))
 assert output["name"] == "Alice"
 assert output["age"] == {"#bigint": "30"}
 assert output["active"] == True
+
+# named tuples are serialized as JSON objects too
+from collections import namedtuple
+User = namedtuple("User", ["name", "age", "active"])
+user = User(name="Bob", age=33, active=False)
+output = value_to_json(user)
+assert output["name"] == "Bob"
+assert output["age"] == {"#bigint": "33"}
+assert output["active"] == False
+
 # ...and deserialized as immutable named tuples
 output = value_from_json(output)
 assert output.name == user.name
@@ -161,16 +175,34 @@ from frozendict import frozendict
 output = value_from_json({"#map": [["key1", "val1"], ["key2", "val2"]]})
 assert output == frozendict({"key1": "val1", "key2": "val2"})
 
-# Apalache tagged unions are deserialized as special named tuples
+# Apalache tagged unions are deserialized as special named tuples.
+# They have a special attribute '_itf_variant' to distinguish them from
+# regular named tuples.
 output = value_from_json({"tag": "Banana", "value": {"length": 5, "color": "yellow"}})
 assert output.__class__.__name__ == "Banana"
+assert hasattr(output.__class__, '_itf_variant') is True
 assert output.length == 5
 assert output.color == "yellow"
 
-#...but take care when the value is not a record!
+# ...but take care when the value is not a record!
+# In this case, it simply has the single field 'value'.
 output = value_from_json({"tag": "Init", "value": "u_OF_UNIT"})
 assert output.__class__.__name__ == "Init"
+assert hasattr(output.__class__, '_itf_variant') is True
 assert output.value == "u_OF_UNIT"
+
+# To construct such variants, use itf_variant decorator.
+from itf_py import itf_variant
+
+@itf_variant
+@dataclass(frozen=True)
+class Apple:
+    length: int
+    color: str
+
+output = value_to_json(Apple(length=10, color="green"))
+assert output["tag"] == "Apple"
+#assert output["value"] == {"length": 10, "color": "green"}
 
 # finally, unserializable values have special representation
 from itf_py.itf import ITFUnserializable

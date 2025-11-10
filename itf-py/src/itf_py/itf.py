@@ -163,9 +163,26 @@ def value_to_json(val: Any) -> Any:
     elif hasattr(val, "__dict__"):
         # An object-like structure, e.g., a record, or a union.
         # Note that we cannot distinguish between a record and a tagged union here.
-        return {k: value_to_json(v) for k, v in val.__dict__.items()}
+        if not hasattr(val.__class__, "_itf_variant"):
+            return {k: value_to_json(v) for k, v in val.__dict__.items()}
+        else:
+            # This is a tagged union
+            tag_name = val.__class__.__name__
+            fields_dict = val.__dict__
+            if len(fields_dict) > 1:
+                # Multiple fields: {"tag": "Banana", "value": {...}}
+                return {
+                    "tag": tag_name,
+                    "value": {k: value_to_json(v) for k, v in fields_dict.items()},
+                }
+            else:
+                # Single field: {"tag": "Banana", "value": ...}
+                field_name, field_value = next(iter(fields_dict.items()))
+                return {
+                    "tag": tag_name,
+                    "value": value_to_json(field_value),
+                }
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
-        # namedtuple (could be a record or tagged union, but we treat them the same)
         if not hasattr(val.__class__, "_itf_variant"):
             # Regular record
             fields_dict = val._asdict()  # type: ignore[attr-defined]

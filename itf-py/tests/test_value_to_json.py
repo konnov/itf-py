@@ -1,4 +1,5 @@
 from collections import namedtuple
+from dataclasses import dataclass
 
 from itf_py.itf import itf_variant, value_to_json
 
@@ -74,13 +75,62 @@ class TestValueToJson:
         result = value_to_json(user)
         assert result == {"name": "Alice", "age": value_to_json(30), "active": True}
 
-    def test_itf_of_variant(self):
+    def test_itf_of_variant_as_namedtuple(self):
         """Test encoding a variant"""
         User = itf_variant(namedtuple("User", ["name", "age", "active"]))
         user = User(name="Alice", age=30, active=True)
         result = value_to_json(user)
         assert result == {
             "tag": "User",
-            "value": {"name": "Alice", "age": value_to_json(30), "active": True
+            "value": {
+                "name": "Alice",
+                "age": value_to_json(30),
+                "active": True
             }
+        }
+
+    def test_itf_of_variant_as_dataclass(self):
+        """Test encoding a variant"""
+
+        @itf_variant
+        @dataclass
+        class User:
+            name: str
+            age: int
+            active: bool
+
+        user = User(name="Alice", age=30, active=True)
+        result = value_to_json(user)
+        assert result == {
+            "tag": "User",
+            "value": {
+                "name": "Alice",
+                "age": value_to_json(30),
+                "active": True
+            }
+        }
+
+    def test_itf_of_variant_single_field(self):
+        """Test encoding a variant with a single field"""
+        Init = itf_variant(namedtuple("Init", ["value"]))
+        init = Init(value="u_OF_UNIT")
+        result = value_to_json(init)
+        assert result == {
+            "tag": "Init",
+            "value": "u_OF_UNIT"
+        }
+
+    def test_itf_of_variant_single_field_dataclass(self):
+        """Test encoding a variant with a single field as dataclass"""
+
+        @itf_variant
+        @dataclass
+        class Init:
+            value: str
+
+        init = Init(value="u_OF_UNIT")
+        result = value_to_json(init)
+        assert result == {
+            "tag": "Init",
+            "value": "u_OF_UNIT"
         }

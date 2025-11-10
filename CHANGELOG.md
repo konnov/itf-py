@@ -1,3 +1,10 @@
+## [0.4.2] - 2025-11-10
+### Fixed
+
+ - Introduce decorator `@itf_variant` to distinguish records from tagged
+   unions. As a result, tagged unions with non-record values are now correctly
+   serialized and deserialized.
+
 ## [0.4.1] - 2025-11-07
 ### Fixed
 

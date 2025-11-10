@@ -109,7 +109,7 @@ class TestValueFromJson:
         """Test decoding a record"""
         dict_val = {"name": "Alice", "age": 30, "active": True}
         result = value_from_json(dict_val)
-        assert hasattr(result.__class__, '_itf_variant') is False
+        assert hasattr(result.__class__, "_itf_variant") is False
         assert result.name == "Alice"
         assert result.age == 30
         assert result.active is True
@@ -119,7 +119,7 @@ class TestValueFromJson:
         dict_val = {"tag": "Banana", "value": {"length": 5, "color": "yellow"}}
         result = value_from_json(dict_val)
         assert result.__class__.__name__ == "Banana"
-        assert hasattr(result.__class__, '_itf_variant') is True
+        assert hasattr(result.__class__, "_itf_variant") is True
         assert result.length == 5
         assert result.color == "yellow"
 
@@ -128,7 +128,7 @@ class TestValueFromJson:
         dict_val = {"tag": "Banana", "value": "u_OF_UNIT"}
         result = value_from_json(dict_val)
         assert result.__class__.__name__ == "Banana"
-        assert hasattr(result.__class__, '_itf_variant') is True
+        assert hasattr(result.__class__, "_itf_variant") is True
         assert result.value == "u_OF_UNIT"
 
     def test_value_of_unserializable(self):

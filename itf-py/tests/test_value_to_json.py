@@ -102,14 +102,21 @@ class TestValueToJson:
             "value": {"name": "Alice", "age": value_to_json(30), "active": True},
         }
 
-    def test_itf_of_variant_single_field(self):
+    def test_itf_of_variant_single__value_field(self):
         """Test encoding a variant with a single field"""
         Init = itf_variant(namedtuple("Init", ["value"]))
         init = Init(value="u_OF_UNIT")
         result = value_to_json(init)
         assert result == {"tag": "Init", "value": "u_OF_UNIT"}
 
-    def test_itf_of_variant_single_field_dataclass(self):
+    def test_itf_of_variant_single_non_value_field(self):
+        """Test encoding a variant with a single field that is not named 'value'"""
+        action = itf_variant(namedtuple("Action", ["sent"]))
+        init = action(sent=42)
+        result = value_to_json(init)
+        assert result == {"tag": "Action", "value": { "sent": value_to_json(42)}}
+
+    def test_itf_of_variant_single_value_field_dataclass(self):
         """Test encoding a variant with a single field as dataclass"""
 
         @itf_variant
@@ -120,3 +127,15 @@ class TestValueToJson:
         init = Init(value="u_OF_UNIT")
         result = value_to_json(init)
         assert result == {"tag": "Init", "value": "u_OF_UNIT"}
+
+    def test_itf_of_variant_single_non_value_field_dataclass(self):
+        """Test encoding a variant with a single field as dataclass that is not named 'value'"""
+
+        @itf_variant
+        @dataclass
+        class Action:
+            sent: int
+
+        action = Action(sent=42)
+        result = value_to_json(action)
+        assert result == {"tag": "Action", "value": { "sent": value_to_json(42)}}

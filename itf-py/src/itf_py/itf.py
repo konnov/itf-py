@@ -169,18 +169,23 @@ def value_to_json(val: Any) -> Any:
             # This is a tagged union
             tag_name = val.__class__.__name__
             fields_dict = val.__dict__
-            if len(fields_dict) > 1:
-                # Multiple fields: {"tag": "Banana", "value": {...}}
+            if len(fields_dict) == 0:
+                # No fields: {"tag": "Banana", "value": null}
+                return {
+                    "tag": tag_name,
+                    "value": None,
+                }
+            elif list(fields_dict.keys()) == ["value"]:
+                # Single field named "value": {"tag": "Banana", "value": ...}
+                return {
+                    "tag": tag_name,
+                    "value": value_to_json(fields_dict["value"]),
+                }
+            else:
+                # Multiple fields or a non-value field: {"tag": "Banana", "value": {...}}
                 return {
                     "tag": tag_name,
                     "value": {k: value_to_json(v) for k, v in fields_dict.items()},
-                }
-            else:
-                # Single field: {"tag": "Banana", "value": ...}
-                field_name, field_value = next(iter(fields_dict.items()))
-                return {
-                    "tag": tag_name,
-                    "value": value_to_json(field_value),
                 }
     elif isinstance(val, tuple) and hasattr(val, "_fields"):
         if not hasattr(val.__class__, "_itf_variant"):
@@ -191,18 +196,23 @@ def value_to_json(val: Any) -> Any:
             # This is a tagged union
             tag_name = val.__class__.__name__
             fields_dict = val._asdict()  # type: ignore[attr-defined]
-            if len(val._fields) > 1:  # pyright: ignore[reportAttributeAccessIssue]
-                # Multiple fields: {"tag": "Banana", "value": {...}}
+            if len(fields_dict) == 0:
+                # No fields: {"tag": "Banana", "value": null}
+                return {
+                    "tag": tag_name,
+                    "value": None,
+                }
+            elif list(fields_dict.keys()) == ["value"]:
+                # Single field named "value": {"tag": "Banana", "value": ...}
+                return {
+                    "tag": tag_name,
+                    "value": value_to_json(fields_dict["value"]),
+                }
+            else:
+                # Multiple fields or a non-value field: {"tag": "Banana", "value": {...}}
                 return {
                     "tag": tag_name,
                     "value": {k: value_to_json(v) for k, v in fields_dict.items()},
-                }
-            else:
-                # Single field: {"tag": "Banana", "value": ...}
-                field_name = val._fields[0]  # pyright: ignore
-                return {
-                    "tag": tag_name,
-                    "value": value_to_json(fields_dict[field_name]),
                 }
     else:
         return ITFUnserializable(value=str(val))

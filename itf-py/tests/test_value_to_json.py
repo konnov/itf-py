@@ -114,7 +114,7 @@ class TestValueToJson:
         action = itf_variant(namedtuple("Action", ["sent"]))
         init = action(sent=42)
         result = value_to_json(init)
-        assert result == {"tag": "Action", "value": { "sent": value_to_json(42)}}
+        assert result == {"tag": "Action", "value": {"sent": value_to_json(42)}}
 
     def test_itf_of_variant_single_value_field_dataclass(self):
         """Test encoding a variant with a single field as dataclass"""
@@ -138,4 +138,4 @@ class TestValueToJson:
 
         action = Action(sent=42)
         result = value_to_json(action)
-        assert result == {"tag": "Action", "value": { "sent": value_to_json(42)}}
+        assert result == {"tag": "Action", "value": {"sent": value_to_json(42)}}

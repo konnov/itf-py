@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "itf-py"
-version = "0.4.2"
+version = "0.4.3"
 description = "Python library to parse and emit Apalache/Quint traces in ITF JSON"
 homepage = "https://github.com/konnov/itf-py"
 authors = ["Igor Konnov <igor@konnov.phd>"]

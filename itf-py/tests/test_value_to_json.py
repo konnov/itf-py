@@ -130,8 +130,8 @@ class TestValueToJson:
 
     def test_itf_of_variant_single_non_value_field_dataclass(self):
         """
-            Test encoding a variant with a single field as dataclass
-            that is not named 'value'
+        Test encoding a variant with a single field as dataclass
+        that is not named 'value'
         """
 
         @itf_variant

@@ -182,7 +182,8 @@ def value_to_json(val: Any) -> Any:
                     "value": value_to_json(fields_dict["value"]),
                 }
             else:
-                # Multiple fields or a non-value field: {"tag": "Banana", "value": {...}}
+                # Multiple fields or a non-value field:
+                #   {"tag": "Banana", "value": {...}}
                 return {
                     "tag": tag_name,
                     "value": {k: value_to_json(v) for k, v in fields_dict.items()},
@@ -209,7 +210,8 @@ def value_to_json(val: Any) -> Any:
                     "value": value_to_json(fields_dict["value"]),
                 }
             else:
-                # Multiple fields or a non-value field: {"tag": "Banana", "value": {...}}
+                # Multiple fields or a non-value field:
+                #   {"tag": "Banana", "value": {...}}
                 return {
                     "tag": tag_name,
                     "value": {k: value_to_json(v) for k, v in fields_dict.items()},

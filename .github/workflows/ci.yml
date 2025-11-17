@@ -49,8 +49,7 @@ jobs:
       run: poetry run pytest --cov=src/itf_py --cov-report=xml --cov-report=term-missing
     
     - name: Run tests with markdown-pytest
-      working-directory: ./itf-py
-      run: poetry run pytest -v ../README.md
+      run: make test-markdown
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

@@ -24,6 +24,23 @@ Simply use: `pip install itf-py`.
 
 ## Usage
 
+### In a rush...
+
+To see an ITF trace `trace.itf.json`, run `ipython` and type:
+
+```python
+import json
+from rich import pretty
+from itf_py import State, Trace, trace_from_json
+
+pretty.install()
+
+with open("trace.itf.json", "r") as f:
+    trace = trace_from_json(json.load(f))
+
+trace
+```
+
 ### Deserializing and serializing traces
 
 Assume that you have the following JSON trace stored in the variable

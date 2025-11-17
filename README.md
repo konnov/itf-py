@@ -26,7 +26,8 @@ Simply use: `pip install itf-py`.
 
 ### In a rush...
 
-To see an ITF trace `trace.itf.json`, run `ipython` and type:
+To load the ITF trace [tftp-trace.itf.json](./examples/tftp-trace.itf.json)
+in python, run `ipython` and paste:
 
 <!-- name: test_in_rush -->
 ```python

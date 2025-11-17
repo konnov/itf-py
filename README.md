@@ -30,10 +30,11 @@ To see an ITF trace `trace.itf.json`, run `ipython` and type:
 
 ```python
 import json
-from rich import pretty
 from itf_py import State, Trace, trace_from_json
 
-pretty.install()
+# if you want nice formatting and colors
+#from rich import pretty
+#pretty.install()
 
 with open("trace.itf.json", "r") as f:
     trace = trace_from_json(json.load(f))

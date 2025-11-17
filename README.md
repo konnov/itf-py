@@ -28,15 +28,17 @@ Simply use: `pip install itf-py`.
 
 To see an ITF trace `trace.itf.json`, run `ipython` and type:
 
+<!-- name: test_in_rush -->
 ```python
 import json
+from pathlib import Path
 from itf_py import State, Trace, trace_from_json
 
 # if you want nice formatting and colors
 #from rich import pretty
 #pretty.install()
 
-with open("trace.itf.json", "r") as f:
+with open(Path("examples") / "tftp-trace.itf.json", "r") as f:
     trace = trace_from_json(json.load(f))
 
 trace

@@ -48,6 +48,13 @@ test-cov-html: ## Run tests with HTML coverage report
 test-cov-xml: ## Run tests with XML coverage report
 	cd $(PROJECT_DIR) && $(POETRY) run pytest --cov=$(SRC_DIR)/$(PACKAGE_NAME) --cov-report=xml
 
+.PHONY: test-markdown
+test-markdown: ## Run tests in README.md
+	cd $(PROJECT_DIR) && $(POETRY) run bash -c 'cd .. && pytest -v README.md'
+
+.PHONY: test-all
+test-all: test test-markdown ## Run all tests including markdown tests
+
 # Code Quality
 .PHONY: format
 format: ## Format code with black and isort

@@ -28,7 +28,7 @@ Runs on every push and pull request to `main` and `develop` branches.
 
 **Jobs:**
 
-1. **Test** - Runs on Python 3.12 and 3.13
+1. **Test** - Runs on Python 3.11
    - Installs dependencies with Poetry
    - Runs pytest with coverage reporting
    - Uploads coverage to Codecov
@@ -87,7 +87,7 @@ poetry run mypy src
 
 All tool configurations are centralized in `pyproject.toml`:
 
-- **black**: Line length 88, Python 3.12+ target
+- **black**: Line length 88, Python 3.11+ target
 - **isort**: Black-compatible profile, line length 88
 - **mypy**: Strict type checking enabled
 - **pytest**: Test discovery and strict configuration

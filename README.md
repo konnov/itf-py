@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/konnov/itf-py/actions/workflows/ci.yml/badge.svg)](https://github.com/konnov/itf-py/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/konnov/itf-py/branch/main/graph/badge.svg)](https://codecov.io/gh/konnov/itf-py)
-[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Python library to parse and emit Apalache ITF traces. Refer to [ADR015][] for

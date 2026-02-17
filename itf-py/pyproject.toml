@@ -9,7 +9,7 @@ keywords = ["itf", "trace", "parser", "tlaplus", "apalache", "quint"]
 packages = [{include = "itf_py", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 frozendict = "^2.4.6"
 
 [tool.poetry.group.dev.dependencies]
@@ -28,7 +28,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
-target-version = ['py312']
+target-version = ['py311']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -51,7 +51,7 @@ line_length = 88
 known_first_party = ["itf_py"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
